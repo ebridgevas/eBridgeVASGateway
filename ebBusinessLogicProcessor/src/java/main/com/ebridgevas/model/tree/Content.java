@@ -1,6 +1,6 @@
 package com.ebridgevas.model.tree;
 
-import com.ebridgevas.commands.ServiceCommandProcessor;
+import com.ebridgevas.services.ServiceCommandProcessor;
 
 /**
  * david@ebridgevas.com

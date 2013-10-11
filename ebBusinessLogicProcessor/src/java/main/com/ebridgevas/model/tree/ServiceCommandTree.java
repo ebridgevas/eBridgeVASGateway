@@ -1,7 +1,13 @@
 package com.ebridgevas.model.tree;
 
+import com.ebridgevas.services.ServiceCommandProcessor;
+import com.ebridgevas.util.MathUtils;
+import com.google.inject.Inject;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.ebridgevas.util.MathUtils.toBigDecimal;
 
 /**
  * david@ebridgevas.com
@@ -70,70 +76,63 @@ import java.util.Map;
 
 public class ServiceCommandTree {
 
-    private static final Map<String, TreeNode> NODES;
+    @Inject
+    private ServiceCommandProcessor balanceEnquiryProcessor;
 
-    static {
+    @Inject
+    private ServiceCommandProcessor dataBundlePurchaseProcessor;
 
-        // TODO load from database
-        TreeNode<Content> dataBundleTree =
-                new TreeNode<Content>(
-                        new Content("144", null, null, "Data Bundle Purchase Service"));
+    private final TreeNode<Content> root;
 
-        TreeNode<Content> purchaseOption =
-                new TreeNode<Content>(
-                        new Content("144", null, null, "Buy a bundle"));
+    public ServiceCommandTree() {
 
+        /* Root. */
+        root = new TreeNode<Content>( new Content(null, null, null, null) );
 
-        TreeNode<Content> balanceEnquiryOption =
-                new TreeNode<Content>(
-                        new Content("144", null, null, "Balance Enquiry"));
+        /* Data Bundle Service Tree. */
+        Content dataBundle = new Content("144", null, null, "Data Bundle Purchase Service");
 
-        NODES = new HashMap<String, TreeNode>();
-        NODES.put("144", dataBundleTree);
+        TreeNode<Content> dataBundleNode = root.addChild(dataBundle);
+
+        /* Data Bundle Purchase Command. */
+        Content purchaseOption = new Content("144", null, null, "Buy a bundle");
+
+        TreeNode<Content> purchaseOptionNode = dataBundleNode.addChild(purchaseOption);
+
+        purchaseOptionNode.addChild(
+                new Content(
+                        "144",
+                        new Product("1",
+                                "10MB Data Bundle",
+                                toBigDecimal(0.65),
+                                toBigDecimal(0.65),
+                                toBigDecimal(0.66),
+                                "MONEY",
+                                "DATA_OCTETS"
+                                ),
+                        dataBundlePurchaseProcessor,
+                        "65c for 10MB Data Bundle" ));
+
+        purchaseOptionNode.addChild(
+                new Content(
+                        "144",
+                        new Product("2",
+                                "40MB Data Bundle",
+                                toBigDecimal(1.00),
+                                toBigDecimal(1.00),
+                                toBigDecimal(1.11),
+                                "MONEY",
+                                "DATA_OCTETS"
+                        ),
+                        dataBundlePurchaseProcessor,
+                        "$1.00 for 40MB Data Bundle" ));
+
+        /* Balance Enquiry Command. */
+        dataBundleNode.addChild(new Content("144", null, balanceEnquiryProcessor, "Balance Enquiry"));
+
     }
 
-    public TreeNode getNode(Integer nodeId) {
-        return null;
-    }
-
-    public static TreeNode<String> getSet1() {
-        TreeNode<String> root = new TreeNode<String>("root");
-        {
-            TreeNode<String> node0 = root.addChild("node0");
-            TreeNode<String> node1 = root.addChild("node1");
-            TreeNode<String> node2 = root.addChild("node2");
-            {
-                TreeNode<String> node20 = node2.addChild(null);
-                TreeNode<String> node21 = node2.addChild("node21");
-                {
-                    TreeNode<String> node210 = node21.addChild("node210");
-                    TreeNode<String> node211 = node21.addChild("node211");
-                }
-            }
-            TreeNode<String> node3 = root.addChild("node3");
-            {
-                TreeNode<String> node30 = node3.addChild("node30");
-            }
-        }
-
-        return root;
-    }
-
-    public static TreeNode<String> getSetSOF() {
-        TreeNode<String> root = new TreeNode<String>("root");
-        {
-            TreeNode<String> node0 = root.addChild("node0");
-            TreeNode<String> node1 = root.addChild("node1");
-            TreeNode<String> node2 = root.addChild("node2");
-            {
-                TreeNode<String> node20 = node2.addChild(null);
-                TreeNode<String> node21 = node2.addChild("node21");
-                {
-                    TreeNode<String> node210 = node20.addChild("node210");
-                }
-            }
-        }
-
+    public TreeNode<Content> getRoot() {
         return root;
     }
 }

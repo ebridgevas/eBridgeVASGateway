@@ -13,13 +13,13 @@ public class TreeNodeIterator<T> implements Iterator<TreeNode<T>> {
 	public TreeNodeIterator(TreeNode<T> treeNode) {
 		this.treeNode = treeNode;
 		this.doNext = ProcessStages.ProcessParent;
-		this.childrenCurNodeIter = treeNode.children.iterator();
+		this.childrenCurNodeIterator = treeNode.children.iterator();
 	}
 
 	private ProcessStages doNext;
 	private TreeNode<T> next;
-	private Iterator<TreeNode<T>> childrenCurNodeIter;
-	private Iterator<TreeNode<T>> childrenSubNodeIter;
+	private Iterator<TreeNode<T>> childrenCurNodeIterator;
+	private Iterator<TreeNode<T>> childrenSubNodeIterator;
 
 	@Override
 	public boolean hasNext() {
@@ -31,9 +31,9 @@ public class TreeNodeIterator<T> implements Iterator<TreeNode<T>> {
 		}
 
 		if (this.doNext == ProcessStages.ProcessChildCurNode) {
-			if (childrenCurNodeIter.hasNext()) {
-				TreeNode<T> childDirect = childrenCurNodeIter.next();
-				childrenSubNodeIter = childDirect.iterator();
+			if (childrenCurNodeIterator.hasNext()) {
+				TreeNode<T> childDirect = childrenCurNodeIterator.next();
+				childrenSubNodeIterator = childDirect.iterator();
 				this.doNext = ProcessStages.ProcessChildSubNode;
 				return hasNext();
 			}
@@ -45,8 +45,8 @@ public class TreeNodeIterator<T> implements Iterator<TreeNode<T>> {
 		}
 		
 		if (this.doNext == ProcessStages.ProcessChildSubNode) {
-			if (childrenSubNodeIter.hasNext()) {
-				this.next = childrenSubNodeIter.next();
+			if (childrenSubNodeIterator.hasNext()) {
+				this.next = childrenSubNodeIterator.next();
 				return true;
 			}
 			else {
@@ -68,5 +68,4 @@ public class TreeNodeIterator<T> implements Iterator<TreeNode<T>> {
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
-
 }
